@@ -6,10 +6,8 @@ public class Hat : Item
     private Transform _pos = null;
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Trigger");
         if (other.tag == "Player" && _pos == null)
         {
-            Debug.Log("TriggerP");
             other.GetComponent<Player>().hasKey = true;
             transform.SetParent(other.transform);
         }

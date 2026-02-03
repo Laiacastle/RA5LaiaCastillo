@@ -42,8 +42,10 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        transform.position = GameObject.FindWithTag("Spawn").transform.position;
+        Debug.Log("Scene");
+        
         NewSceneEvent.Invoke();
+        transform.position = GameObject.FindWithTag("Spawn").transform.position;
     }
 
     void OnDestroy()
