@@ -28,6 +28,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     void Awake()
     {
+        
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
@@ -41,7 +42,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        
+        transform.position = GameObject.FindWithTag("Spawn").transform.position;
         NewSceneEvent.Invoke();
     }
 
@@ -111,11 +112,6 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     }
 
-    public void OnNext(InputAction.CallbackContext context)
-    {
-        Debug.Log("Not implemented.");
-    }
-
     public void OnPrevious(InputAction.CallbackContext context)
     {
         Debug.Log("Not implemented.");
@@ -177,6 +173,14 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         else if (collision.gameObject.tag == "Llave")
         {
             hasKey = true;
+        }
+    }
+
+    public void OnUseObject(InputAction.CallbackContext context)
+    {
+        if (hasKey)
+        {
+            gameObject.GetComponentInChildren<Item>().Use(this);
         }
     }
 }

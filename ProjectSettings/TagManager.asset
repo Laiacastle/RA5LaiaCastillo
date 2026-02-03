@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Puerta
   - TP
+  - Spawn
+  - CollectablePos
+  - HatPos
   layers:
   - Default
   - TransparentFX
