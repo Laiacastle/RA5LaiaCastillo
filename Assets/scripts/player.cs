@@ -13,6 +13,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     
     [SerializeField] private Vector3 moveInput;
     [SerializeField] private Vector3 moveDirection;
+    [SerializeField] private CharacterController _Cc;
      private InputSystem_Actions inputActions;
     [SerializeField] private MoveBehaviour _mB;
     [SerializeField] bool isSprinting = false;
@@ -86,10 +87,14 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
+        if (!context.performed || dancing) return;
+        if (_Cc.isGrounded)
+        {
+            _mB.Jump();
+            _aB.Jump(true);
+        }
+        
 
-        _aB.Jump();
-        _mB.Jump();
 
     }
 
@@ -137,6 +142,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     {
         _mB = GetComponent<MoveBehaviour>();
         _aB = GetComponent<AnimationBehaviour>();
+        _Cc = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -144,9 +150,13 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     // Update is called once per frame
     void Update()
     {
-
+        
         _mB.Move(direction, isSprinting);
         _aB.Move(direction, isSprinting);
+    }
+    void LateUpdate()
+    {
+        if (_Cc.isGrounded) _aB.Jump(false);
     }
 
     public void OnAim(InputAction.CallbackContext context)

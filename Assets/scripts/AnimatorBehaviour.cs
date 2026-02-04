@@ -52,9 +52,10 @@ public class AnimationBehaviour : MonoBehaviour
         }
     }
 
-    public void Jump()
+    public void Jump(bool change)
     {
-        _animator.ResetTrigger("Jump");
-        _animator.SetTrigger("Jump");
+        _animator.SetBool("isJumping", change);
+
+
     }
 }

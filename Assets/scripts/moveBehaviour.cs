@@ -21,6 +21,7 @@ public class MoveBehaviour : MonoBehaviour
 
     private Vector3 currentVelocity;
     private float verticalVelocity;
+    [SerializeField] AnimationBehaviour _aB;
 
     void Awake()
     {
@@ -46,7 +47,7 @@ public class MoveBehaviour : MonoBehaviour
 
         Vector3 motion = currentVelocity;
 
-        // Gravedad
+        //Gravedad
         if (controller.isGrounded)
         {
             if (verticalVelocity < 0f)
