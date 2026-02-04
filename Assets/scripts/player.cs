@@ -59,14 +59,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     public void OnCrouch(InputAction.CallbackContext context)
     {
-        if (context.performed)
-        {
-            isSprinting = true;
-        }
-        if (context.canceled)
-        {
-            isSprinting = false;
-        }
+        Debug.Log("Not implemented.");
     }
     public void OnWinDance()
     {
@@ -114,14 +107,17 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     }
 
-    public void OnPrevious(InputAction.CallbackContext context)
-    {
-        Debug.Log("Not implemented.");
-    }
 
     public void OnSprint(InputAction.CallbackContext context)
     {
-        Debug.Log("Not implemented.");
+        if (context.performed)
+        {
+            isSprinting = true;
+        }
+        if (context.canceled)
+        {
+            isSprinting = false;
+        }
     }
     void OnEnable()
     {
@@ -183,6 +179,15 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         if (hasKey)
         {
             gameObject.GetComponentInChildren<Item>().Use(this);
+        }
+    }
+
+    public void OnDrop(InputAction.CallbackContext context)
+    {
+        if (hasKey)
+        {
+            hasKey = false;
+            gameObject.GetComponentInChildren<Item>().Drop();
         }
     }
 }
