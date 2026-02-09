@@ -1,10 +1,8 @@
 using EasyDoorSystem;
 using System;
-using UnityEditor.Experimental.GraphView;
+using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 {
@@ -29,29 +27,18 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     void Awake()
     {
-        
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
-
         instance = this;
         DontDestroyOnLoad(gameObject);
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        Debug.Log("Scene");
-        
-        NewSceneEvent.Invoke();
-        transform.position = GameObject.FindWithTag("Spawn").transform.position;
-    }
-
-    void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        _mB = GetComponent<MoveBehaviour>();
+        _aB = GetComponent<AnimationBehaviour>();
+        _Cc = GetComponent<CharacterController>();
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
     public void OnAttack(InputAction.CallbackContext context)
     {
@@ -74,6 +61,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     public void OnInteract(InputAction.CallbackContext context)
     {
+
         if (context.canceled && !aiming)
         {
             direction = Vector3.zero;
@@ -93,9 +81,6 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
             _mB.Jump();
             _aB.Jump(true);
         }
-        
-
-
     }
 
     public void OnLook(InputAction.CallbackContext context)
@@ -111,7 +96,6 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         direction = new Vector3(input.x, 0f, input.y);
 
     }
-
 
     public void OnSprint(InputAction.CallbackContext context)
     {
@@ -132,19 +116,15 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
             inputActions.Player.SetCallbacks(this);
         }
         inputActions.Player.Enable();
+        if (instance != null)
+            instance.DanceEvent += DanceEvent;
     }
     void OnDisable()
     {
-        inputActions.Player.Disable();
-    }
-
-    void Start()
-    {
-        _mB = GetComponent<MoveBehaviour>();
-        _aB = GetComponent<AnimationBehaviour>();
-        _Cc = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (inputActions != null)
+            inputActions.Player.Disable();
+        if (instance != null)
+            instance.DanceEvent -= DanceEvent;
     }
 
     // Update is called once per frame
@@ -199,5 +179,11 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
             hasKey = false;
             gameObject.GetComponentInChildren<Item>().Drop();
         }
+    }
+
+    public void OnExit(InputAction.CallbackContext context)
+    {
+        if (context.canceled)
+            GameObject.FindWithTag("Manage").GetComponent<GameManager>().ExitGame();
     }
 }

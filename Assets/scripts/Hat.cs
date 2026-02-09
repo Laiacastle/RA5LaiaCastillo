@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Hat : Item
 {
-    private Transform _pos = null;
+    public Transform _pos = null;
 
     [SerializeField] private float rotationSpeed = 90f;
     [SerializeField] private float bobSpeed = 2f;

@@ -12,6 +12,11 @@ public class CameraBehaviour : MonoBehaviour
         mixingCamera.ChildCameras[2].enabled = false;
         _player = GameObject.FindWithTag("Player").GetComponent<Player>();
         mixingCamera = GetComponent<CinemachineMixingCamera>();
+        
+    }
+
+    void OnEnable()
+    {
         if (_player != null)
         {
             _player.DanceEvent += DanceEvent;
@@ -19,32 +24,32 @@ public class CameraBehaviour : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void OnDisable()
     {
-        _player.DanceEvent -= DanceEvent;
-        _player.AimEvent -= AimEvent;
+        if (_player != null)
+        {
+            _player.DanceEvent -= DanceEvent;
+            _player.AimEvent -= AimEvent;
+        }
     }
+
 
     public void DanceEvent(bool dancing)
     {
-       if (dancing)
-       {
-           Debug.Log("Camera: Player started dancing");
-           mixingCamera.ChildCameras[0].enabled = true; // Full View Camera
-           mixingCamera.ChildCameras[1].enabled = false;
+        if (mixingCamera == null || mixingCamera.ChildCameras == null || mixingCamera.ChildCameras.Count < 3)
+            mixingCamera = GetComponent<CinemachineMixingCamera>();
+        if (mixingCamera == null || mixingCamera.ChildCameras.Count < 3) return;
+
+        if (dancing)
+        {
+            mixingCamera.ChildCameras[0].enabled = true;
+            mixingCamera.ChildCameras[1].enabled = false;
             mixingCamera.ChildCameras[2].enabled = false;
         }
-       else
-       {
-           Debug.Log("Camera: Player stopped dancing");
-           mixingCamera.ChildCameras[1].enabled = true; // 3 person View Camera
-           mixingCamera.ChildCameras[0].enabled = false;
+        else
+        {
+            mixingCamera.ChildCameras[1].enabled = true;
+            mixingCamera.ChildCameras[0].enabled = false;
             mixingCamera.ChildCameras[2].enabled = false;
         }
     }

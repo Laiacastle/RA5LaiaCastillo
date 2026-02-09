@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private float seconds = 1f;
     [SerializeField] bool UNITY_EDITOR = true;
+    [SerializeField] private SaveManager _sM;
     public static GameManager instance;
 
     void Awake()
@@ -30,8 +31,22 @@ public class GameManager : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
+        _sM = GetComponentInChildren<SaveManager>();
     }
-    
+    void Start()
+    {
+        StartCoroutine(AutoLoad());
+    }
+
+    IEnumerator AutoLoad()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        if (PlayerPrefs.HasKey("SAVE_DATA"))
+        {
+            _sM.LoadGame();
+        }
+    }
     public void Update()
     {
         if (animator == null)
@@ -46,6 +61,7 @@ public class GameManager : MonoBehaviour
                 Debug.LogWarning("Transition no encontrado en la escena");
             }
         }
+        
     }
     public void LoadNextScene()
     {
@@ -75,6 +91,7 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        
         SceneManager.sceneLoaded -= OnSceneLoaded;
 
         if (scene.buildIndex == 0)
@@ -88,6 +105,7 @@ public class GameManager : MonoBehaviour
 
     public void ExitGame()
     {
+        _sM.SaveGame();
         #if UNITY_EDITOR
 
         UnityEditor.EditorApplication.isPlaying = false; // detiene el modo Play

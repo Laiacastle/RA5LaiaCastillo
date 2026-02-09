@@ -9,6 +9,8 @@ TagManager:
   - Spawn
   - CollectablePos
   - HatPos
+  - Manage
+  - Hat
   layers:
   - Default
   - TransparentFX
