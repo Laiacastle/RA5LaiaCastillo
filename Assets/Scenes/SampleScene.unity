@@ -6297,6 +6297,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 229278619}
   m_SourcePrefab: {fileID: 100100000, guid: 2b519101e10d4a74580d4c86ac9e03e6, type: 3}
+--- !u!114 &793302449 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5921595597869683535, guid: d407c9c3c32c49c408fcc6df33a21b9c, type: 3}
+  m_PrefabInstance: {fileID: 3486650694381555748}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 625c14eee3ad46c99df7c7c891ef668a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineThirdPersonFollow
 --- !u!1 &800104602 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1974105250760466, guid: bbb972e8372282f4093c9484693385fd, type: 3}
@@ -12890,17 +12901,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.7454354, y: 2.5634563, z: 0.6609601}
   m_Center: {x: 0.00063711405, y: 1.2818903, z: 0.00694789}
---- !u!114 &1962443264 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4121162269877138952, guid: d407c9c3c32c49c408fcc6df33a21b9c, type: 3}
-  m_PrefabInstance: {fileID: 3486650694381555748}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09637e29bc7cce248a8ccf2c6b7093b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AnimationBehaviour
 --- !u!1 &1962912283
 GameObject:
   m_ObjectHideFlags: 0
@@ -13039,10 +13039,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 369436682109915919, guid: d407c9c3c32c49c408fcc6df33a21b9c, type: 3}
-      propertyPath: _aB
-      value: 
-      objectReference: {fileID: 1962443264}
     - target: {fileID: 2775484259697823422, guid: d407c9c3c32c49c408fcc6df33a21b9c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -13087,6 +13083,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6990334805006025724, guid: d407c9c3c32c49c408fcc6df33a21b9c, type: 3}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 793302449}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
