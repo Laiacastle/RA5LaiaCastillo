@@ -7,14 +7,14 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 {
     [SerializeField] private AnimationBehaviour _aB;
-    public float speed = 5f;
+    [SerializeField] private float speed = 5f;
     
     [SerializeField] private Vector3 moveInput;
     [SerializeField] private Vector3 moveDirection;
     [SerializeField] private CharacterController _Cc;
      private InputSystem_Actions inputActions;
     [SerializeField] private MoveBehaviour _mB;
-    [SerializeField] bool isSprinting = false;
+    [SerializeField] public bool isSprinting = false;
     private Vector3 direction;
     public bool dancing = false;
     public bool aiming = false;
@@ -22,6 +22,8 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     public event Action<bool> AimEvent = delegate { };
     public event Action NewSceneEvent = delegate { };
     public static Player instance;
+    [SerializeField] private Bullet bullet;
+    [SerializeField] private CinemachineThirdPersonFollow playerCamera;
 
     [SerializeField] public bool hasKey;
 
@@ -42,7 +44,10 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     }
     public void OnAttack(InputAction.CallbackContext context)
     {
-        Debug.Log("Not implemented.");
+        if (aiming && context.canceled)
+        {
+            Instantiate(bullet, GameObject.FindWithTag("CollectablePos").transform.position, Quaternion.LookRotation(playerCamera.transform.forward));
+        }
     }
 
     public void OnCrouch(InputAction.CallbackContext context)

@@ -2832,10 +2832,12 @@ MonoBehaviour:
   speed: 5
   moveInput: {x: 0, y: 0, z: 0}
   moveDirection: {x: 0, y: 0, z: 0}
+  _Cc: {fileID: 0}
   _mB: {fileID: 0}
   isSprinting: 0
   dancing: 0
   aiming: 0
+  bullet: {fileID: 5659839352227410503, guid: 4604a5d33603aa94d972d766898cd3d4, type: 3}
   hasKey: 0
 --- !u!143 &281711077255128966
 CharacterController:
@@ -2881,6 +2883,7 @@ MonoBehaviour:
   rotationSpeed: 10
   jumpHeight: 1.5
   gravity: -30
+  _aB: {fileID: 4121162269877138952}
 --- !u!114 &4121162269877138952
 MonoBehaviour:
   m_ObjectHideFlags: 0
