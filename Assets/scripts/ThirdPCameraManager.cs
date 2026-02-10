@@ -17,17 +17,39 @@ public class ThirdPCameraManager : MonoBehaviour
     private float yaw;
     private float pitch;
 
+    [SerializeField] GameManager _gameMan;
+    private bool isPaused;
+
+    private void Awake()
+    {
+        _gameMan = GameObject.FindWithTag("Manage").GetComponent<GameManager>();
+    }
+
+    private void OnEnable()
+    {
+        if(_gameMan != null)
+        {
+            _gameMan.PauseEvent += TogglePause;
+        }
+    }
+    private void OnDisable()
+    {
+        if (_gameMan != null)
+        {
+            _gameMan.PauseEvent -= TogglePause;
+        }
+    }
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         
-
         yaw = target.eulerAngles.y;
     }
 
     void LateUpdate()
     {
+        if (isPaused) return;
         HandleMouse();
         UpdateCameraPosition();
         RotateCharacter();
@@ -35,6 +57,7 @@ public class ThirdPCameraManager : MonoBehaviour
 
     void HandleMouse()
     {
+        
         if (Mouse.current == null) return;
 
         Vector2 mouseDelta = Mouse.current.delta.ReadValue();
@@ -61,5 +84,10 @@ public class ThirdPCameraManager : MonoBehaviour
             targetRotation,
             Time.deltaTime * characterRotationSpeed
         );
+    }
+
+    private void TogglePause(bool pause)
+    {
+        isPaused = pause;
     }
 }

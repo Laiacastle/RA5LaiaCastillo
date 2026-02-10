@@ -1,20 +1,42 @@
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
     [SerializeField]private Player playerScript;
+    [SerializeField] private GameManager _gM;
+
+    private bool isPaused;
 
     const string SAVE_KEY = "SAVE_DATA";
 
+    private void OnEnable()
+    {
+        if (_gM != null)
+        {
+            _gM.PauseEvent += TogglePause;
+        }
+    }
+    private void OnDisable()
+    {
+        if (_gM != null) 
+        {
+            _gM.PauseEvent -= TogglePause;
+        }
+    }
     private void Start()
     {
+        _gM = gameObject.GetComponentInParent<GameManager>();
         playerScript = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
     }
 
     public void SaveGame()
     {
+        if (isPaused) return;
+        if (playerScript == null)
+            playerScript = GameObject.FindGameObjectWithTag("Player")?.GetComponent<Player>();
         SaveData data = new SaveData();
 
         // Posición
@@ -69,5 +91,30 @@ public class SaveManager : MonoBehaviour
             item._pos = GameObject.FindWithTag("CollectablePos").transform;
         }
         Debug.Log("Se han cargado los datos");
+    }
+
+    public void ResetGame()
+    {
+        
+        if (PlayerPrefs.HasKey(SAVE_KEY))
+            PlayerPrefs.DeleteKey(SAVE_KEY);
+
+        PlayerPrefs.Save();
+
+        Debug.Log("Datos de guardado borrados");
+
+        if (Player.instance != null)
+        {
+            Destroy(Player.instance.gameObject);
+        }
+
+
+
+        _gM.LoadScene(0);
+    }
+
+    private void TogglePause(bool pause)
+    {
+        isPaused = pause;
     }
 }

@@ -11,6 +11,7 @@ TagManager:
   - HatPos
   - Manage
   - Hat
+  - PauseCanvas
   layers:
   - Default
   - TransparentFX

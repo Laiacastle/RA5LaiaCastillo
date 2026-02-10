@@ -185,6 +185,14 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     public void OnExit(InputAction.CallbackContext context)
     {
         if (context.canceled)
-            GameObject.FindWithTag("Manage").GetComponent<GameManager>().ExitGame();
+            GameObject.FindWithTag("Manage").GetComponent<GameManager>().TogglePause();
+    }
+
+    void OnDestroy()
+    {
+        if (instance != null && instance.inputActions != null)
+        {
+            instance.inputActions.Player.Exit.Disable();
+        }
     }
 }

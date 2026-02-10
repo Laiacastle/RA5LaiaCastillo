@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -9,6 +11,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float seconds = 1f;
     [SerializeField] bool UNITY_EDITOR = true;
     [SerializeField] private SaveManager _sM;
+    [SerializeField] private GameObject _pauseCanvas;
+    [SerializeField] private PlayerInput playerInput;
+    public bool isPaused = false;
+    public event Action<bool> PauseEvent = delegate { };
     public static GameManager instance;
 
     void Awake()
@@ -32,6 +38,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
         _sM = GetComponentInChildren<SaveManager>();
+        playerInput = Player.instance.GetComponent<PlayerInput>();
     }
     void Start()
     {
@@ -70,6 +77,7 @@ public class GameManager : MonoBehaviour
 
     public void LoadScene(int sceneIndex)
     {
+        if (isPaused) TogglePause();
         StartCoroutine(SceneLoadCoroutine(sceneIndex));
     }
 
@@ -93,6 +101,13 @@ public class GameManager : MonoBehaviour
     {
         
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        _pauseCanvas = GetComponentInChildren<Canvas>(true).gameObject;
+        playerInput = Player.instance.GetComponent<PlayerInput>();
+        playerInput.DeactivateInput();
+        playerInput.ActivateInput();
+
+        if (Player.instance != null)
+            playerInput = Player.instance.GetComponent<PlayerInput>();
 
         if (scene.buildIndex == 0)
         {
@@ -101,6 +116,44 @@ public class GameManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
         }
 
+    }
+
+    private void PauseGame()
+    {
+        isPaused = true;
+        PauseEvent.Invoke(isPaused);
+        playerInput.actions.FindActionMap("Player").Disable();
+        playerInput.actions.FindActionMap("UI").Enable();
+        _pauseCanvas.SetActive(true);
+        Time.timeScale = 0f;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        Debug.Log("Pausa");
+    }
+
+    private void ResumeGame()
+    {
+        isPaused = false;
+        PauseEvent.Invoke(isPaused);
+        playerInput.actions.FindActionMap("Player").Enable();
+        playerInput.actions.FindActionMap("UI").Disable();
+        _pauseCanvas?.SetActive(false);
+        Time.timeScale = 1f;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        Debug.Log("Continuar");
+    }
+
+    public void TogglePause()
+    {
+        if (isPaused)
+            ResumeGame();
+        else
+            PauseGame();
     }
 
     public void ExitGame()
