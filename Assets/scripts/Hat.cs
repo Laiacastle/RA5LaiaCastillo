@@ -18,13 +18,16 @@ public class Hat : Item
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player" && _pos == null)
+        
+        if (other.tag == "Player" && _pos == null && gameObject.GetComponentInParent<Player>())
         {
+            Debug.Log("Equipar");
             other.GetComponent<Player>().hasKey = true;
             transform.SetParent(other.transform);
+            _pos = GameObject.FindWithTag("CollectablePos").transform;
         }
 
-        _pos = GameObject.FindWithTag("CollectablePos").transform;
+        
     }
 
     public override void Use(Player player)

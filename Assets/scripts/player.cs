@@ -163,10 +163,6 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
             Puerta puerta = collision.gameObject.GetComponentInChildren<Puerta>();
             puerta.OpenDoor();
         }
-        else if (collision.gameObject.tag == "Llave")
-        {
-            hasKey = true;
-        }
     }
 
     public void OnUseObject(InputAction.CallbackContext context)
