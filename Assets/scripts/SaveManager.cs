@@ -6,6 +6,8 @@ public class SaveManager : MonoBehaviour
 {
     [SerializeField]private Player playerScript;
     [SerializeField] private GameManager _gM;
+    [SerializeField] public bool hasHat = false;
+    [SerializeField] public GameObject _hat;
 
     private bool isPaused;
 
@@ -86,11 +88,28 @@ public class SaveManager : MonoBehaviour
         p.hasKey = data.hasKey;
         if (data.hasKey)
         {
-            Hat item = GameObject.FindWithTag("Hat").GetComponent<Hat>();
-            item.transform.SetParent(p.transform);
-            item._pos = GameObject.FindWithTag("CollectablePos").transform;
+            
+            GameObject[] worldHat = GameObject.FindGameObjectsWithTag("Hat");
+            for (int i = 0; i < worldHat.Length; i++)
+            {
+                Debug.Log(i);
+            }
+
+            if (worldHat.Length > 1)
+            {
+                Destroy(worldHat[1]);
+            }
+
+            worldHat[0].transform.SetParent(p.transform);
+            worldHat[0].GetComponent<Hat>()._pos = GameObject.FindWithTag("CollectablePos").transform;
+            hasHat = true;
         }
-        Debug.Log("Se han cargado los datos");
+        else
+        {
+            hasHat= false;
+            Instantiate(_hat);
+        }
+            Debug.Log("Se han cargado los datos");
     }
 
     public void ResetGame()
@@ -107,8 +126,6 @@ public class SaveManager : MonoBehaviour
         {
             Destroy(Player.instance.gameObject);
         }
-
-
 
         _gM.LoadScene(0);
     }

@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -8,12 +9,36 @@ public class Hat : Item
     [SerializeField] private float rotationSpeed = 90f;
     [SerializeField] private float bobSpeed = 2f;
     [SerializeField] private float bobHeight = 0.25f;
+    [SerializeField] private bool saveManager;
+    
 
     private Vector3 groundStartPos;
+
+    private void Awake()
+    {
+        saveManager = GameObject.FindWithTag("SaveMan").GetComponent<SaveManager>().hasHat;
+    }
+
+
 
     private void Start()
     {
         groundStartPos = transform.position;
+        if (saveManager)
+        {
+            GameObject[] worldHat = GameObject.FindGameObjectsWithTag("Hat");
+            for (int i = 0; i < worldHat.Length; i++)
+            {
+                if (!worldHat[i].GetComponentInParent<Player>())
+                {
+                    Destroy(worldHat[i]);
+                }
+                
+            }
+
+            
+        }
+        
     }
 
     private void OnTriggerEnter(Collider other)
