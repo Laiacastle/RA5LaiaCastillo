@@ -76,8 +76,9 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
 
     public void LoadScene(int sceneIndex)
     {
+        _sM.SaveGame();
         if (isPaused) TogglePause();
-        if (!GameObject.FindWithTag("Hat") && sceneIndex  == 0)
+        if (!GameObject.FindWithTag("Hat") && sceneIndex == 1)
         {
             Instantiate(_sM._hat);
         }
@@ -153,19 +154,6 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
             ResumeGame();
         else
             PauseGame();
-    }
-
-    public void ExitGame()
-    {
-        _sM.SaveGame();
-        #if UNITY_EDITOR
-
-        UnityEditor.EditorApplication.isPlaying = false; // detiene el modo Play
-
-        #else
-           
-                Application.Quit();
-        #endif
     }
 
     public void OnPause(InputAction.CallbackContext context)

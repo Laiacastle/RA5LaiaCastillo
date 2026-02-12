@@ -127,7 +127,7 @@ public class SaveManager : MonoBehaviour
             Destroy(Player.instance.gameObject);
         }
 
-        _gM.LoadScene(0);
+        _gM.LoadScene(1);
     }
 
     private void TogglePause(bool pause)
