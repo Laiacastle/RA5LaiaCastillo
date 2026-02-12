@@ -5,12 +5,16 @@ using UnityEngine;
 public class CameraBehaviour : MonoBehaviour
 {
     [SerializeField] private Player _player;
+    [SerializeField] private GameManager _gameManager;
     [SerializeField] private CinemachineMixingCamera mixingCamera;
+
+    private bool _paused = false;
     void Awake()
     {
         mixingCamera.ChildCameras[0].enabled = false;
         mixingCamera.ChildCameras[2].enabled = false;
         _player = GameObject.FindWithTag("Player").GetComponent<Player>();
+        _gameManager = GameObject.FindWithTag("Manage").GetComponent<GameManager>();
         mixingCamera = GetComponent<CinemachineMixingCamera>();
         
     }
@@ -22,6 +26,10 @@ public class CameraBehaviour : MonoBehaviour
             _player.DanceEvent += DanceEvent;
             _player.AimEvent += AimEvent;
         }
+        if (_gameManager != null)
+        {
+            _gameManager.PauseEvent += TogglePause;
+        }
     }
 
     void OnDisable()
@@ -30,6 +38,10 @@ public class CameraBehaviour : MonoBehaviour
         {
             _player.DanceEvent -= DanceEvent;
             _player.AimEvent -= AimEvent;
+        }
+        if (_gameManager)
+        {
+            _gameManager.PauseEvent -= TogglePause;
         }
     }
 
@@ -70,5 +82,10 @@ public class CameraBehaviour : MonoBehaviour
             mixingCamera.ChildCameras[0].enabled = false;
             mixingCamera.ChildCameras[2].enabled = false;
         }
+    }
+
+    private void TogglePause(bool pause)
+    {
+        _paused = pause;
     }
 }
