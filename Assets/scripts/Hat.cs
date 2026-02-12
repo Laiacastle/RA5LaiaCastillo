@@ -19,8 +19,6 @@ public class Hat : Item
         saveManager = GameObject.FindWithTag("SaveMan").GetComponent<SaveManager>().hasHat;
     }
 
-
-
     private void Start()
     {
         groundStartPos = transform.position;
@@ -35,8 +33,6 @@ public class Hat : Item
                 }
                 
             }
-
-            
         }
         
     }

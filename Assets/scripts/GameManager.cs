@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
 {
     [SerializeField] private Animator animator;
     [SerializeField] private float seconds = 1f;
-    [SerializeField] bool UNITY_EDITOR = true;
+    [SerializeField] private bool UNITY_EDITOR = true;
     [SerializeField] private SaveManager _sM;
     [SerializeField] private GameObject _pauseCanvas;
     public bool isPaused = false;

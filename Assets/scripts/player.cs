@@ -6,26 +6,38 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 {
-    [SerializeField] private AnimationBehaviour _aB;
-    [SerializeField] private float speed = 5f;
-    
+    public static Player instance;
+
+    [Header("Camara")]
+    [SerializeField] private CinemachineThirdPersonFollow playerCamera;
+
+    [Header("Player")]
     [SerializeField] private Vector3 moveInput;
     [SerializeField] private Vector3 moveDirection;
     [SerializeField] private CharacterController _Cc;
-     private InputSystem_Actions inputActions;
+
+    [Header("Behaviours")]
     [SerializeField] private MoveBehaviour _mB;
+    [SerializeField] private AnimationBehaviour _aB;
+
+
+    [SerializeField] private Bullet bullet;
+
     [SerializeField] public bool isSprinting = false;
+    [SerializeField] public bool hasKey;
+
     private Vector3 direction;
+    
+    private InputSystem_Actions inputActions;
+
+    //anim Vars
     public bool dancing = false;
     public bool aiming = false;
+
+    //Eventos
     public event Action<bool> DanceEvent = delegate { };
     public event Action<bool> AimEvent = delegate { };
     public event Action NewSceneEvent = delegate { };
-    public static Player instance;
-    [SerializeField] private Bullet bullet;
-    [SerializeField] private CinemachineThirdPersonFollow playerCamera;
-
-    [SerializeField] public bool hasKey;
 
     void Awake()
     {
@@ -42,6 +54,47 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
+
+    void OnEnable()
+    {
+        if (inputActions == null)
+        {
+            inputActions = new InputSystem_Actions();
+            inputActions.Player.SetCallbacks(this);
+        }
+        inputActions.Player.Enable();
+        if (instance != null)
+            instance.DanceEvent += DanceEvent;
+    }
+    void OnDisable()
+    {
+        if (inputActions != null)
+            inputActions.Player.Disable();
+        if (instance != null)
+            instance.DanceEvent -= DanceEvent;
+    }
+
+    public void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.tag == "Puerta")
+        {
+            Puerta puerta = collision.gameObject.GetComponentInChildren<Puerta>();
+            puerta.OpenDoor();
+        }
+    }
+
+    void Update()
+    {
+
+        _mB.Move(direction, isSprinting);
+        _aB.Move(direction, isSprinting);
+    }
+
+    void LateUpdate()
+    {
+        if (_Cc.isGrounded) _aB.Jump(false);
+    }
+
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (aiming && context.canceled)
@@ -50,10 +103,6 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         }
     }
 
-    public void OnCrouch(InputAction.CallbackContext context)
-    {
-        Debug.Log("Not implemented.");
-    }
     public void OnWinDance()
     {
        direction = Vector3.zero;
@@ -88,11 +137,6 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         }
     }
 
-    public void OnLook(InputAction.CallbackContext context)
-    {
-        Debug.Log("Not implemented.");
-    }
-
     public void OnMove(InputAction.CallbackContext context)
     {
         if (dancing) return;
@@ -113,36 +157,6 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
             isSprinting = false;
         }
     }
-    void OnEnable()
-    {
-        if (inputActions == null)
-        {
-            inputActions = new InputSystem_Actions();
-            inputActions.Player.SetCallbacks(this);
-        }
-        inputActions.Player.Enable();
-        if (instance != null)
-            instance.DanceEvent += DanceEvent;
-    }
-    void OnDisable()
-    {
-        if (inputActions != null)
-            inputActions.Player.Disable();
-        if (instance != null)
-            instance.DanceEvent -= DanceEvent;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-        _mB.Move(direction, isSprinting);
-        _aB.Move(direction, isSprinting);
-    }
-    void LateUpdate()
-    {
-        if (_Cc.isGrounded) _aB.Jump(false);
-    }
 
     public void OnAim(InputAction.CallbackContext context)
     {
@@ -155,16 +169,6 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
         }
     }
-
-    public void OnTriggerEnter(Collider collision)
-    {
-        if (collision.gameObject.tag == "Puerta")
-        {
-            Puerta puerta = collision.gameObject.GetComponentInChildren<Puerta>();
-            puerta.OpenDoor();
-        }
-    }
-
     public void OnUseObject(InputAction.CallbackContext context)
     {
         if (hasKey)
@@ -182,5 +186,4 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         }
     }
 
-    
 }
