@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.6830188, g: 0.45749372, b: 0.45749372, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0
+  m_FogDensity: 0.246
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -12991,6 +12991,10 @@ PrefabInstance:
     - target: {fileID: 2775484259697823422, guid: d407c9c3c32c49c408fcc6df33a21b9c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5921595597869683535, guid: d407c9c3c32c49c408fcc6df33a21b9c, type: 3}
+      propertyPath: ShoulderOffset.z
+      value: 12.26
       objectReference: {fileID: 0}
     - target: {fileID: 6589620646494198286, guid: d407c9c3c32c49c408fcc6df33a21b9c, type: 3}
       propertyPath: m_Name
