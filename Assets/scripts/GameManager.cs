@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,44 +16,115 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
     public bool isPaused = false;
     public event Action<bool> PauseEvent = delegate { };
     public static GameManager instance;
+    private bool hasLoadedSave = false;
     private InputSystem_Actions inputActions;
 
-    void Awake()
+    private void Awake()
     {
-        GameObject transitionObj = GameObject.Find("Transition");
-        if (transitionObj != null)
-        {
-            animator = transitionObj.GetComponent<Animator>();
-        }
-        else
-        {
-            Debug.LogWarning("Transition no encontrado en la escena");
-        }
+        // Patrón singleton
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
-
         instance = this;
         DontDestroyOnLoad(gameObject);
-        SceneManager.sceneLoaded += OnSceneLoaded;
+
         _sM = GetComponentInChildren<SaveManager>();
     }
-    void Start()
-    {
-        StartCoroutine(AutoLoad());
-    }
 
-    IEnumerator AutoLoad()
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        yield return new WaitForSeconds(0.1f);
-
-        if (PlayerPrefs.HasKey("SAVE_DATA"))
+        if (scene.buildIndex == 0)
         {
-            _sM.LoadGame();
+            // Menú
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            Player.instance?.gameObject.SetActive(false);
+            _pauseCanvas?.SetActive(false);
+        }
+        else
+        {
+            // Escena de juego
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            SearchPJ();
+
+            if (!hasLoadedSave)
+            {
+                StartCoroutine(AutoLoad());
+                hasLoadedSave = true;
+            }
+        }
+        if (animator == null)
+        {
+            GameObject transitionObj = GameObject.Find("Transition");
+            if (transitionObj != null)
+                animator = transitionObj.GetComponent<Animator>();
         }
     }
+
+
+
+    private void SearchPJ()
+    {
+        if (Player.instance != null)
+        {
+            Player.instance.gameObject.SetActive(true);
+        }
+
+        else
+        {
+            Player p = Resources.FindObjectsOfTypeAll<Player>().FirstOrDefault(obj => obj.gameObject.scene.name != null);
+            if (p != null)
+            {
+                p.gameObject.SetActive(true);
+                Player.instance = p;
+            }
+        }
+    }
+    private void OnEnable()
+    {
+        if (inputActions == null)
+        {
+            inputActions = new InputSystem_Actions();
+            inputActions.Global.SetCallbacks(this);
+        }
+        inputActions.Global.Enable();
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        if (inputActions != null)
+            inputActions.Global.Disable();
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+
+    private IEnumerator AutoLoad()
+    {
+        if (!PlayerPrefs.HasKey("SAVE_DATA")) yield break;
+
+        string json = PlayerPrefs.GetString("SAVE_DATA");
+        SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+        if (SceneManager.GetActiveScene().buildIndex != data.sceneIndex)
+        {
+            Debug.Log("Cargando escena guardada: " + data.sceneIndex);
+            yield return _sM.LoadSceneAndApply(data);
+        }
+        else
+        {
+            Debug.Log("Aplicando datos en la misma escena");
+            _sM.ApplyData(data);
+        }
+
+        hasLoadedSave = true;
+    }
+
     public void Update()
     {
         if (animator == null)
@@ -76,21 +148,21 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
 
     public void LoadScene(int sceneIndex)
     {
-        _sM.SaveGame();
+        Time.timeScale = 1f;
         if (isPaused) TogglePause();
-        if (!GameObject.FindWithTag("Hat") && sceneIndex == 1)
-        {
-            Instantiate(_sM._hat);
-        }
+
+        // ... resto de tu código
         StartCoroutine(SceneLoadCoroutine(sceneIndex));
     }
 
     private IEnumerator SceneLoadCoroutine(int sceneIndex)
     {
-        animator.SetTrigger("StartTransition");
+        if (animator != null)
+            animator.SetTrigger("StartTransition");
+
         yield return new WaitForSecondsRealtime(seconds);
 
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        hasLoadedSave = false;
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneIndex);
         asyncLoad.allowSceneActivation = true;
@@ -101,55 +173,37 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
         }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-        _pauseCanvas = GetComponentInChildren<Canvas>(true).gameObject;
-
-
-        if (scene.buildIndex == 0)
-        {
-            Time.timeScale = 1f;
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            GameObject.FindWithTag("Player").transform.position = GameObject.FindWithTag("Spawn").transform.position;
-        }
-
-    }
-
     private void PauseGame()
     {
         isPaused = true;
         PauseEvent.Invoke(isPaused);
-        _pauseCanvas.SetActive(true);
-        Time.timeScale = 0f;
 
+        if (_pauseCanvas != null)
+            _pauseCanvas.SetActive(true);
+
+        Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        Debug.Log("Pausa");
+        _sM?.SaveGame();
     }
 
     private void ResumeGame()
     {
         isPaused = false;
         PauseEvent.Invoke(isPaused);
-        _pauseCanvas?.SetActive(false);
-        Time.timeScale = 1f;
 
+        if (_pauseCanvas != null)
+            _pauseCanvas.SetActive(false);
+
+        Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        Debug.Log("Continuar");
     }
 
     public void TogglePause()
     {
-        Debug.Log("Toggle");
+        if (SceneManager.GetActiveScene().buildIndex == 0) return;
         if (isPaused)
             ResumeGame();
         else
@@ -158,27 +212,12 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
 
     public void OnPause(InputAction.CallbackContext context)
     {
-        Debug.Log("Input");
         if (context.started)
         {
-            Debug.Log("InputCanceled");
-            GameObject.FindWithTag("Manage").GetComponent<GameManager>().TogglePause();
+            TogglePause();
         }
 
     
     }
-    void OnEnable()
-    {
-        if (inputActions == null)
-        {
-            inputActions = new InputSystem_Actions();
-            inputActions.Global.SetCallbacks(this);
-        }
-        inputActions.Global.Enable();
-    }
-    void OnDisable()
-    {
-        if (inputActions != null)
-            inputActions.Global.Disable();
-    }
+
 }

@@ -1,32 +1,57 @@
 using System.Collections;
+using System.Linq;
+using TMPro.EditorUtilities;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
-
     [SerializeField] private float seconds = 1f;
+    [SerializeField] private GameObject firstSelectedButton;
+    [SerializeField] private GameManager _gM;
+
+    private InputSystem_Actions inputActions;
 
     private void Awake()
     {
-        GameObject transitionObj = GameObject.Find("Transition");
-        if (transitionObj != null)
+        if (inputActions == null)
         {
-            animator = transitionObj.GetComponent<Animator>();
+            inputActions = new InputSystem_Actions();
         }
+
+        inputActions.UI.Enable();
     }
-        
+    private void Start()
+    {
+        inputActions.UI.Enable();
+
+        if (Keyboard.current != null)
+            InputUser.PerformPairingWithDevice(Keyboard.current);
+        if (Mouse.current != null)
+            InputUser.PerformPairingWithDevice(Mouse.current);
+
+        EventSystem.current.SetSelectedGameObject(firstSelectedButton);
+        _gM = GameObject.FindWithTag("Manage").GetComponent<GameManager>();
+    }
+
+    private void OnDestroy()
+    {
+        inputActions.UI.Disable();
+    }
+
     public void LoadScene(int sceneIndex)
     {
-        StartCoroutine(SceneLoadCoroutine(sceneIndex));
+        _gM.LoadScene(sceneIndex);
+        //StartCoroutine(SceneLoadCoroutine(sceneIndex));
     }
 
     private IEnumerator SceneLoadCoroutine(int sceneIndex)
     {
-        animator.SetTrigger("StartTransition");
+        
         yield return new WaitForSecondsRealtime(seconds);
-
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneIndex);
         asyncLoad.allowSceneActivation = true;
@@ -40,12 +65,9 @@ public class MenuManager : MonoBehaviour
     public void ExitGame()
     {
 #if UNITY_EDITOR
-
-        UnityEditor.EditorApplication.isPlaying = false; // detiene el modo Play
-
+        UnityEditor.EditorApplication.isPlaying = false;
 #else
-           
-                Application.Quit();
+        Application.Quit();
 #endif
     }
 }
