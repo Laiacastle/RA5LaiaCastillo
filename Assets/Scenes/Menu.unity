@@ -423,6 +423,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 538418287}
   m_CullTransparentMesh: 1
+--- !u!1 &583477605 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7005652967882288308, guid: 926316949c0474b4ba1632630fb6744a, type: 3}
+  m_PrefabInstance: {fileID: 1005702875}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &610258044
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -549,7 +554,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00ea44742f21b3748885e8ec9f490a45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuManager
-  seconds: 1
   firstSelectedButton: {fileID: 1961436753}
   _gM: {fileID: 0}
 --- !u!4 &719366215
@@ -1459,7 +1463,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
-  m_FirstSelected: {fileID: 0}
+  m_FirstSelected: {fileID: 583477605}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
 --- !u!4 &2072100464
@@ -1514,8 +1518,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 403244473}
   - {fileID: 1211487083}
+  - {fileID: 610258044}
   - {fileID: 2061985947}
   - {fileID: 2072100464}
   - {fileID: 719366215}
   - {fileID: 1005702875}
-  - {fileID: 610258044}

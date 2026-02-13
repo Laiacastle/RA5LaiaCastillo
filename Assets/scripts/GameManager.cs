@@ -50,17 +50,12 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
             Cursor.lockState = CursorLockMode.Locked;
             SearchPJ();
 
+            // Solo autoload si es escena de juego
             if (!hasLoadedSave)
             {
                 StartCoroutine(AutoLoad());
                 hasLoadedSave = true;
             }
-        }
-        if (animator == null)
-        {
-            GameObject transitionObj = GameObject.Find("Transition");
-            if (transitionObj != null)
-                animator = transitionObj.GetComponent<Animator>();
         }
     }
 
@@ -120,6 +115,11 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
         {
             Debug.Log("Aplicando datos en la misma escena");
             _sM.ApplyData(data);
+        }
+        if (data.sceneIndex == 0)
+        {
+            Debug.Log("AutoLoad detectó menú, no hacemos nada");
+            yield break;
         }
 
         hasLoadedSave = true;
