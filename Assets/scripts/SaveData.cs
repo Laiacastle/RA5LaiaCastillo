@@ -5,7 +5,7 @@ public class SaveData
     public float posY;
     public float posZ;
 
-    public string sceneName;
+    public int sceneIndex;
 
     public bool hasKey;
 }
