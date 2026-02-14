@@ -116,7 +116,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     public void OnInteract(InputAction.CallbackContext context)
     {
 
-        if (context.canceled && !aiming)
+        if (context.started && !aiming)
         {
             direction = Vector3.zero;
             _aB.Dance();
@@ -160,7 +160,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
 
     public void OnAim(InputAction.CallbackContext context)
     {
-        if (context.canceled && !dancing)
+        if (context.started && !dancing)
         {
             _aB.Aim();
             aiming = !aiming;
