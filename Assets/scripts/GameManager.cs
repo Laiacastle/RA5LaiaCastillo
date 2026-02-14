@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Linq;
@@ -158,10 +159,8 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
     {
         if (animator != null)
             animator.SetTrigger("StartTransition");
-        if (sceneIndex == 2)
-            _sM.SaveSecondScene();
-
-        yield return new WaitForSecondsRealtime(seconds);
+        
+            yield return new WaitForSecondsRealtime(seconds);
 
         hasLoadedSave = false;
 
@@ -171,6 +170,21 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
         while (!asyncLoad.isDone)
         {
             yield return null;
+        }
+        if (sceneIndex == 1 && !_sM.hasHat && !GameObject.FindWithTag("Hat"))
+        {
+            Instantiate(_sM._hat);
+        }
+        else if (sceneIndex == 2)
+        {
+            _sM.SaveSecondScene();
+        }else if (sceneIndex == 1 && _sM.hasHat && !GameObject.FindWithTag("Hat"))
+        {
+            GameObject hat = Instantiate(_sM._hat);
+            hat.transform.SetParent(GameObject.FindWithTag("Player").transform);
+
+            hat.GetComponent<Hat>()._pos =
+                GameObject.FindWithTag("CollectablePos").transform;
         }
     }
 

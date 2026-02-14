@@ -86,11 +86,12 @@ public class SaveManager : MonoBehaviour
         data.sceneIndex = 2;
 
         // Objeto
-        data.hasKey = playerScript.hasKey;
+        data.hasKey = true;
 
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(SAVE_KEY, json);
         PlayerPrefs.Save();
+        StartCoroutine(LoadAfterScene(data));
     }
 
     public void LoadGame()
@@ -119,31 +120,34 @@ public class SaveManager : MonoBehaviour
     public void ApplyData(SaveData data)
     {
         GameObject playerObj = GameObject.FindWithTag("Player");
+        
         if (playerObj == null)
         {
             Debug.LogError("Player no encontrado al cargar");
             return;
         }
 
+        CharacterController cc = playerObj.GetComponent<CharacterController>();
+        cc.enabled = false;
+
         playerObj.transform.position = new Vector3(data.posX, data.posY, data.posZ);
+
+        cc.enabled = true;
+
+        Debug.Log(playerObj.transform.position);
+        Debug.Log(data.posX + data.posY + data.posZ);
 
         Player p = playerObj.GetComponent<Player>();
         p.hasKey = data.hasKey;
 
         if (data.hasKey)
         {
-            GameObject[] worldHat = GameObject.FindGameObjectsWithTag("Hat");
-            for(int i = 0; i < worldHat.Length; i++)
-            {
-                Debug.Log(worldHat[i]);
-            }
-            if (worldHat.Length > 1)
-                Destroy(worldHat[1]);
-            Debug.Log(worldHat[0] == null || worldHat == null);
-            if (worldHat[0] == null || worldHat == null)
-                worldHat[0] = Instantiate(_hat);
-            worldHat[0].transform.SetParent(p.transform);
-            worldHat[0].GetComponent<Hat>()._pos =
+            if (GameObject.FindWithTag("Hat")) Destroy(GameObject.FindWithTag("Hat"));
+            GameObject hat = Instantiate(_hat);
+
+            hat.transform.SetParent(p.transform);
+
+            hat.GetComponent<Hat>()._pos =
                 GameObject.FindWithTag("CollectablePos").transform;
 
             hasHat = true;
@@ -165,14 +169,20 @@ public class SaveManager : MonoBehaviour
         p.transform.position = new Vector3(data.posX, data.posY, data.posZ);
         p.hasKey = data.hasKey;
 
-        if (data.hasKey)
+        if (data.hasKey && GameObject.FindWithTag("Hat").GetComponentInParent<Player>() == null)
         {
             GameObject hat = GameObject.FindWithTag("Hat");
+            if (hat == null) hat = Instantiate(_hat);
             if (hat != null)
             {
                 hat.transform.SetParent(p.transform);
                 hat.GetComponent<Hat>()._pos = GameObject.FindWithTag("CollectablePos")?.transform;
             }
+            
+        }
+        else if (SceneManager.GetActiveScene().buildIndex == 1)
+        {
+            Instantiate(_hat);
         }
 
         Debug.Log("Datos cargados correctamente");
@@ -199,8 +209,7 @@ public class SaveManager : MonoBehaviour
 
         if (_hat != null)
         {
-            Vector3 hatSpawnPos = new Vector3(3.01494f, 1.64f, 0.83f);
-            Instantiate(_hat, hatSpawnPos, Quaternion.identity);
+            Instantiate(_hat);
             hasHat = false;
         }
 

@@ -1,5 +1,7 @@
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public class Hat : Item
@@ -9,32 +11,28 @@ public class Hat : Item
     [SerializeField] private float rotationSpeed = 90f;
     [SerializeField] private float bobSpeed = 2f;
     [SerializeField] private float bobHeight = 0.25f;
-    [SerializeField] private bool saveManager;
     
 
     private Vector3 groundStartPos;
 
-    private void Awake()
-    {
-        saveManager = GameObject.FindWithTag("SaveMan").GetComponent<SaveManager>().hasHat;
-    }
 
     private void Start()
     {
         groundStartPos = transform.position;
-        if (saveManager)
-        {
-            GameObject[] worldHat = GameObject.FindGameObjectsWithTag("Hat");
-            for (int i = 0; i < worldHat.Length; i++)
-            {
-                if (!worldHat[i].GetComponentInParent<Player>())
-                {
-                    Destroy(worldHat[i]);
-                }
-                
-            }
-        }
         
+    }
+    private void OnEnable()
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 0 )
+        {
+            Destroy(gameObject);
+        }
+        else if (GameObject.FindWithTag("Hat").GetComponent<Hat>() != this)
+        {
+            Destroy(GameObject.FindWithTag("Hat"));
+
+        }
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -58,6 +56,11 @@ public class Hat : Item
 
     private void Update()
     {
+        if (GameObject.FindWithTag("Hat").GetComponent<Hat>() != this && SceneManager.GetActiveScene().buildIndex == 2)
+        {
+            Destroy(GameObject.FindWithTag("Hat"));
+
+        }
         if (_pos != null)
         {
             transform.position = _pos.position;
