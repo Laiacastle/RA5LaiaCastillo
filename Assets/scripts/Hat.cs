@@ -10,7 +10,12 @@ public class Hat : Item
     [SerializeField] private float rotationSpeed = 90f;
     [SerializeField] private float bobSpeed = 2f;
     [SerializeField] private float bobHeight = 0.25f;
-    
+    [SerializeField] private float maxDropHeight = 0.5f; // altura máxima desde el suelo
+    [SerializeField] private float dropFallSpeed = 5f;
+
+    private bool isDropping = false;
+    private float targetGroundY;
+
 
     private Vector3 groundStartPos;
 
@@ -66,10 +71,26 @@ public class Hat : Item
         }
         else
         {
-            transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime, Space.World);
+            if (isDropping)
+            {
+                Vector3 pos = transform.position;
 
-            float bobOffset = Mathf.Sin(Time.time * bobSpeed) * bobHeight;
-            transform.position = groundStartPos + Vector3.up * bobOffset;
+                pos.y = Mathf.MoveTowards(pos.y, targetGroundY, dropFallSpeed * Time.deltaTime);
+                transform.position = pos;
+
+                if (Mathf.Abs(pos.y - targetGroundY) < 0.01f)
+                {
+                    isDropping = false;
+                    groundStartPos = transform.position;
+                }
+            }
+            else
+            {
+                transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime, Space.World);
+
+                float bobOffset = Mathf.Sin(Time.time * bobSpeed) * bobHeight;
+                transform.position = groundStartPos + Vector3.up * bobOffset;
+            }
         }
     }
 
@@ -77,6 +98,17 @@ public class Hat : Item
     {
         _pos = null;
         transform.SetParent(null);
-        groundStartPos = transform.position; 
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 10f))
+        {
+            targetGroundY = hit.point.y + maxDropHeight;
+        }
+        else
+        {
+            targetGroundY = transform.position.y - maxDropHeight;
+        }
+
+        isDropping = true;
     }
 }
