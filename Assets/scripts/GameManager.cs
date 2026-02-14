@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
         string json = PlayerPrefs.GetString("SAVE_DATA");
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        if (SceneManager.GetActiveScene().buildIndex != data.sceneIndex)
+        if (SceneManager.GetActiveScene().buildIndex == 1 && SceneManager.GetActiveScene().buildIndex != data.sceneIndex)
         {
             Debug.Log("Cargando escena guardada: " + data.sceneIndex);
             yield return _sM.LoadSceneAndApply(data);
@@ -151,7 +151,6 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
         Time.timeScale = 1f;
         if (isPaused) TogglePause();
 
-        // ... resto de tu código
         StartCoroutine(SceneLoadCoroutine(sceneIndex));
     }
 
@@ -159,6 +158,8 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
     {
         if (animator != null)
             animator.SetTrigger("StartTransition");
+        if (sceneIndex == 2)
+            _sM.SaveSecondScene();
 
         yield return new WaitForSecondsRealtime(seconds);
 

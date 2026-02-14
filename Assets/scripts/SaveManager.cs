@@ -66,6 +66,33 @@ public class SaveManager : MonoBehaviour
 
     }
 
+    public void SaveSecondScene()
+    {
+        Debug.Log("Intentando guardar...");
+        Player playerScript = GameObject.FindGameObjectWithTag("Player")?.GetComponent<Player>();
+        GameObject spawn = GameObject.FindWithTag("Spawn");
+        if (playerScript == null) return;
+
+        if (playerScript == null) return;
+        SaveData data = new SaveData();
+
+        // Posición
+        data.posX = spawn.transform.position.x;
+        data.posY = spawn.transform.position.y;
+        data.posZ = spawn.transform.position.z;
+        Debug.Log("Guardando posición: " + spawn.transform.position);
+
+        // Escena
+        data.sceneIndex = 2;
+
+        // Objeto
+        data.hasKey = playerScript.hasKey;
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
+
     public void LoadGame()
     {
         if (!PlayerPrefs.HasKey("SAVE_DATA")) return;
@@ -106,10 +133,15 @@ public class SaveManager : MonoBehaviour
         if (data.hasKey)
         {
             GameObject[] worldHat = GameObject.FindGameObjectsWithTag("Hat");
-
+            for(int i = 0; i < worldHat.Length; i++)
+            {
+                Debug.Log(worldHat[i]);
+            }
             if (worldHat.Length > 1)
                 Destroy(worldHat[1]);
-
+            Debug.Log(worldHat[0] == null || worldHat == null);
+            if (worldHat[0] == null || worldHat == null)
+                worldHat[0] = Instantiate(_hat);
             worldHat[0].transform.SetParent(p.transform);
             worldHat[0].GetComponent<Hat>()._pos =
                 GameObject.FindWithTag("CollectablePos").transform;
@@ -126,7 +158,6 @@ public class SaveManager : MonoBehaviour
     }
     private IEnumerator LoadAfterScene(SaveData data)
     {
-        //Espera a que Player.instance esté
         yield return new WaitUntil(() => Player.instance != null);
 
         Player p = Player.instance;
