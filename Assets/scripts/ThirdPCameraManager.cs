@@ -22,7 +22,7 @@ public class ThirdPCameraManager : MonoBehaviour
 
     private void Awake()
     {
-        _gameMan = GameObject.FindWithTag("Manage").GetComponent<GameManager>();
+        _gameMan = GameManager.instance;
     }
 
     private void OnEnable()

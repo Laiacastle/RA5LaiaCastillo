@@ -1,9 +1,8 @@
-using System.Collections;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
-using UnityEngine.InputSystem.Users;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
@@ -25,7 +24,7 @@ public class MenuManager : MonoBehaviour
 
         // Referencia al GameManager si no está asignado
         if (_gM == null)
-            _gM = GameObject.FindWithTag("Manage").GetComponent<GameManager>();
+            _gM = GameManager.instance;
 
         // Aseguramos que haya EventSystem con InputSystemUIInputModule
         SetupUIInputModule();

@@ -13,8 +13,8 @@ public class CameraBehaviour : MonoBehaviour
     {
         mixingCamera.ChildCameras[0].enabled = false;
         mixingCamera.ChildCameras[2].enabled = false;
-        _player = GameObject.FindWithTag("Player").GetComponent<Player>();
-        _gameManager = GameObject.FindWithTag("Manage").GetComponent<GameManager>();
+        _player = Player.instance;
+        _gameManager = GameManager.instance;
         mixingCamera = GetComponent<CinemachineMixingCamera>();
         
     }

@@ -180,7 +180,7 @@ public class GameManager : MonoBehaviour, InputSystem_Actions.IGlobalActions
         }else if (sceneIndex == 1 && _sM.hasHat && !GameObject.FindWithTag("Hat"))
         {
             GameObject hat = Instantiate(_sM._hat);
-            hat.transform.SetParent(GameObject.FindWithTag("Player").transform);
+            hat.transform.SetParent(Player.instance.transform);
 
             hat.GetComponent<Hat>()._pos =
                 GameObject.FindWithTag("CollectablePos").transform;
