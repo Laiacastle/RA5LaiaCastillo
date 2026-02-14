@@ -11,7 +11,7 @@ public class DoorManager : MonoBehaviour
             Player player = collision.gameObject.GetComponent<Player>();
             if (player && player.hasKey)
             {
-                GameManager.instance.LoadNextScene();
+                GameManager.instance.LoadScene(1);
             }
         }
         

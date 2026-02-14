@@ -39,7 +39,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
     public event Action<bool> AimEvent = delegate { };
     public event Action NewSceneEvent = delegate { };
 
-    void Awake()
+    private void Awake()
     {
         if (instance != null && instance != this)
         {
@@ -48,14 +48,20 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         }
         instance = this;
         DontDestroyOnLoad(gameObject);
+        
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        GetVars();
+    }
+
+    private void GetVars()
+    {
         _mB = GetComponent<MoveBehaviour>();
         _aB = GetComponent<AnimationBehaviour>();
         _Cc = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         if (inputActions == null)
         {
@@ -66,7 +72,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         if (instance != null)
             instance.DanceEvent += DanceEvent;
     }
-    void OnDisable()
+    private void OnDisable()
     {
         if (inputActions != null)
             inputActions.Player.Disable();
@@ -74,7 +80,7 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
             instance.DanceEvent -= DanceEvent;
     }
 
-    public void OnTriggerEnter(Collider collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.tag == "Puerta")
         {
@@ -83,14 +89,14 @@ public class Player : MonoBehaviour, InputSystem_Actions.IPlayerActions
         }
     }
 
-    void Update()
+    private void Update()
     {
 
         _mB.Move(direction, isSprinting);
         _aB.Move(direction, isSprinting);
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
         if (_Cc.isGrounded) _aB.Jump(false);
     }

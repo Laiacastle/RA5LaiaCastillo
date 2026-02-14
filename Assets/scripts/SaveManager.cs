@@ -29,19 +29,19 @@ public class SaveManager : MonoBehaviour
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        playerScript = GameObject.FindGameObjectWithTag("Player")?.GetComponent<Player>();
+        playerScript = Player.instance?.GetComponent<Player>();
     }
     private void Start()
     {
         _gM = gameObject.GetComponentInParent<GameManager>();
-        playerScript = GameObject.FindGameObjectWithTag("Player")?.GetComponent<Player>();
+        playerScript =Player.instance?.GetComponent<Player>();
 
     }
 
     public void SaveGame()
     {
         Debug.Log("Intentando guardar...");
-        Player playerScript = GameObject.FindGameObjectWithTag("Player")?.GetComponent<Player>();
+        Player playerScript = Player.instance?.GetComponent<Player>();
         if (playerScript == null) return;
 
         if (playerScript == null) return;
@@ -68,7 +68,7 @@ public class SaveManager : MonoBehaviour
     public void SaveSecondScene()
     {
         Debug.Log("Intentando guardar...");
-        Player playerScript = GameObject.FindGameObjectWithTag("Player")?.GetComponent<Player>();
+        Player playerScript = Player.instance?.GetComponent<Player>();
         GameObject spawn = GameObject.FindWithTag("Spawn");
         if (playerScript == null) return;
 
@@ -92,6 +92,7 @@ public class SaveManager : MonoBehaviour
         PlayerPrefs.Save();
         StartCoroutine(LoadAfterScene(data));
     }
+
 
     public void LoadGame()
     {
@@ -118,7 +119,7 @@ public class SaveManager : MonoBehaviour
     }
     public void ApplyData(SaveData data)
     {
-        GameObject playerObj = GameObject.FindWithTag("Player");
+        GameObject playerObj = Player.instance.gameObject;
         
         if (playerObj == null)
         {
@@ -132,9 +133,6 @@ public class SaveManager : MonoBehaviour
         playerObj.transform.position = new Vector3(data.posX, data.posY, data.posZ);
 
         cc.enabled = true;
-
-        Debug.Log(playerObj.transform.position);
-        Debug.Log(data.posX + data.posY + data.posZ);
 
         Player p = playerObj.GetComponent<Player>();
         p.hasKey = data.hasKey;
